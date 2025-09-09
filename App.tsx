@@ -17,13 +17,16 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   const handleSignUp = () => {
     setCurrentScreen('signup');
   };
 
   const handleLogin = () => {
-    console.log('Login pressed');
+    setCurrentScreen('login');
   };
 
   const handleBackToWelcome = () => {
@@ -32,6 +35,14 @@ function App() {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    setLoginEmail('');
+    setLoginPassword('');
+  };
+
+  const handleBackToWelcomeFromLogin = () => {
+    setCurrentScreen('welcome');
+    setLoginEmail('');
+    setLoginPassword('');
   };
 
   const validateEmail = (email: string) => {
@@ -74,6 +85,37 @@ function App() {
     } catch (error) {
       Alert.alert('Error', 'Failed to create account. Please try again.');
       console.error('Storage error:', error);
+    }
+  };
+
+  const handleLoginSubmit = async () => {
+    // Validation
+    if (!loginEmail || !loginPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      // Get stored user data
+      const storedData = await AsyncStorage.getItem('userData');
+      
+      if (!storedData) {
+        Alert.alert('Error', 'No account found. Please sign up first.');
+        return;
+      }
+
+      const userData = JSON.parse(storedData);
+
+      // Check credentials
+      if (loginEmail === userData.email && loginPassword === userData.password) {
+        setUserLoggedIn(true);
+        setCurrentScreen('loggedIn');
+      } else {
+        Alert.alert('Error', 'Invalid email or password');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Login failed. Please try again.');
+      console.error('Login error:', error);
     }
   };
 
@@ -145,6 +187,81 @@ function App() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+    );
+  }
+
+  if (currentScreen === 'login') {
+    return (
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <TouchableOpacity onPress={handleBackToWelcomeFromLogin} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.signupTitle}>Login</Text>
+          <Text style={styles.signupSubtitle}>Sign in to your account</Text>
+
+          <View style={styles.formContainer}>
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#9CA3AF"
+                value={loginEmail}
+                onChangeText={setLoginEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="#9CA3AF"
+                value={loginPassword}
+                onChangeText={setLoginPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.createAccountButton}
+              onPress={handleLoginSubmit}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.createAccountButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  if (currentScreen === 'loggedIn') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcomeText}>Welcome!</Text>
+        <Text style={styles.helperText}>You have successfully logged in</Text>
+        
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleBackToWelcome}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
@@ -302,6 +419,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#ef4444',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    marginTop: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
 
