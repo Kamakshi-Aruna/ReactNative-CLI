@@ -95,6 +95,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBackPress, onLoginSuccess }
               onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
+              autoComplete="off"
+              textContentType="none"
+              passwordRules=""
             />
           </View>
 

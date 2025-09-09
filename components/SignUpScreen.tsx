@@ -111,6 +111,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onBackPress }) => {
               onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
+              autoComplete="off"
+              textContentType="none"
+              passwordRules=""
             />
           </View>
 
@@ -124,6 +127,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onBackPress }) => {
               onChangeText={setConfirmPassword}
               secureTextEntry
               autoCapitalize="none"
+              autoComplete="off"
+              textContentType="none"
+              passwordRules=""
             />
           </View>
 
