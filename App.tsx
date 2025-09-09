@@ -37,8 +37,6 @@ function App() {
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
-      
-      <Text style={styles.helperText}>Choose an option to continue</Text>
     </View>
   );
 }
